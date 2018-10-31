@@ -3,10 +3,16 @@ import React, { Component } from "react";
 import axios from "../../axios";
 
 import Post from "../../components/Post/Post";
-import NewPost from "../NewPost/NewPost";
+
+// we want to lazy load this
+// import NewPost from "../NewPost/NewPost";
 import Posts from "../Posts/Posts";
 import "./Blog.css";
-import { Route, Link, NavLink, Switch } from "react-router-dom";
+import { Route, Link, NavLink, Switch, Redirect } from "react-router-dom";
+import asyncComponent from "../../hoc/AsyncComponent";
+const AsyncNewPost = asyncComponent(() => {
+  return import("../NewPost/NewPost");
+});
 
 class Blog extends Component {
   state = {
@@ -41,8 +47,10 @@ class Blog extends Component {
         </header>
 
         <Switch>
-          <Route path="/new-post" component={NewPost} exact />
+          <Route path="/new-post" component={AsyncNewPost} exact />
           <Route path="/posts" component={Posts} />
+          <Redirect from="/" to="/posts" exact />
+          <Route render={() => <h1>Page Not found</h1>} />
         </Switch>
         {/* <section>
           <FullPost id={this.state.selectedPostId} />
